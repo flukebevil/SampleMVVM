@@ -20,7 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val binding: ActivityMainBinding? = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val binding: ActivityMainBinding? = DataBindingUtil.setContentView(
+            this,
+            R.layout.activity_main
+        )
         binding?.apply {
             executePendingBindings()
         }
@@ -33,15 +36,18 @@ class MainActivity : AppCompatActivity() {
         observeViewModel(model)
     }
 
-
     private fun initAdapter() {
         projectList.adapter = projectAdapter
         projectList.layoutManager = LinearLayoutManager(this)
     }
 
-    fun observeViewModel(viewModel: ProjectListViewModel) {
-        viewModel.getListObservable()?.observe(this, Observer<List<Project>> { t ->
-            projectAdapter?.setItem(t)
-        })
+    private fun observeViewModel(viewModel: ProjectListViewModel) {
+        viewModel.getListObservable()?.observe(
+            this,
+            Observer<List<Project>>
+            { t ->
+                projectAdapter?.setItem(t)
+            }
+        )
     }
 }

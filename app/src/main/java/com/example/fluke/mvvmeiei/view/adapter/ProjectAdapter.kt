@@ -19,22 +19,28 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() 
             projectListOld = it
             projectListOld?.let { notifyItemRangeInserted(0, it.size) }
         } ?: apply {
-            val diffUtils: DiffUtil.DiffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    return projectListOld?.get(oldItemPosition)?.id ==
-                        projectList?.get(newItemPosition)?.id
-                }
+            val diffUtils: DiffUtil.DiffResult = DiffUtil.calculateDiff(
+                object : DiffUtil.Callback() {
+                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
+                    {
+                        return projectListOld?.get(oldItemPosition)?.id ==
+                            projectList?.get(newItemPosition)?.id
+                    }
 
-                override fun getOldListSize(): Int = projectListOld?.size ?: 0
+                    override fun getOldListSize(): Int = projectListOld?.size ?: 0
 
-                override fun getNewListSize(): Int = projectList?.size ?: 0
+                    override fun getNewListSize(): Int = projectList?.size ?: 0
 
-                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    val project = projectList?.get(newItemPosition)
-                    val old = projectList?.get(oldItemPosition)
-                    return project?.id === old?.id && Objects.equals(project?.git_url, old?.git_url)
-                }
-            })
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val project = projectList?.get(newItemPosition)
+                        val old = projectList?.get(oldItemPosition)
+                        return project?.id === old?.id &&
+                            Objects.equals(project?.git_url, old?.git_url)
+                    }
+                })
             projectListOld = projectList
             diffUtils.dispatchUpdatesTo(this)
         }
@@ -47,13 +53,19 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() 
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectViewHolder {
-        val binding: ProjectListItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.project_list_item,
-            parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
+        ProjectViewHolder {
+        val binding: ProjectListItemBinding =
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.project_list_item,
+                parent,
+                false)
         return ProjectViewHolder(binding)
     }
 
     override fun getItemCount(): Int = projectListOld?.size ?: 0
 
-    inner class ProjectViewHolder(var binding: ProjectListItemBinding? = null) : RecyclerView.ViewHolder(binding?.root)
+    inner class ProjectViewHolder(var binding: ProjectListItemBinding? = null) :
+        RecyclerView.ViewHolder(binding?.root)
 }
