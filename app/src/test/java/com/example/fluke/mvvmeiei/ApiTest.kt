@@ -1,5 +1,6 @@
 package com.example.fluke.mvvmeiei
 
+import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.MutableLiveData
 import com.example.fluke.mvvmeiei.model.Project
 import com.example.fluke.mvvmeiei.service.GithubService
@@ -25,9 +26,6 @@ import retrofit2.Response
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-
-
 
 class ApiTest {
     @Rule
@@ -44,7 +42,7 @@ class ApiTest {
 
     var mockCallBack = mock(ProjectRepository.CallBackListener::class.java)
 
-    val viewModel: ProjectListViewModel = ProjectListViewModel()
+    val viewModel: ProjectListViewModel = ProjectListViewModel(this)
 
     @Before
     fun setUp() {

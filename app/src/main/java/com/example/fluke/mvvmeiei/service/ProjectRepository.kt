@@ -40,7 +40,7 @@ class ProjectRepository {
         return projectRepository as ProjectRepository
     }
 
-    fun getProjectList(projectId: String, callback: CallBackListener) {
+    fun getProjectList(projectId: String): MutableLiveData<List<Project>> {
         val mutableLiveData: MutableLiveData<List<Project>> = MutableLiveData()
         githubService?.getProjectList(projectId)
             ?.subscribeOn(Schedulers.io())
@@ -51,12 +51,12 @@ class ProjectRepository {
 
                 override fun onNext(t: Response<List<Project>>) {
                     mutableLiveData.value = t.body()
-                    callback.onFetchSuccess(mutableLiveData)
                 }
 
                 override fun onError(e: Throwable) {
                 }
             })
+        return mutableLiveData
     }
 
     private fun setHttpClientNew(): OkHttpClient {
@@ -70,9 +70,5 @@ class ProjectRepository {
             .addHeader("version", BuildConfig.VERSION_NAME)
             .build())
         return client.build()
-    }
-
-    interface CallBackListener {
-        fun onFetchSuccess(body: MutableLiveData<List<Project>>)
     }
 }
