@@ -1,4 +1,4 @@
-package com.example.fluke.mvvmeiei
+package com.example.fluke.mvvmeiei.view.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import com.example.fluke.mvvmeiei.R
 import com.example.fluke.mvvmeiei.databinding.ActivityMainBinding
 import com.example.fluke.mvvmeiei.model.Project
 import com.example.fluke.mvvmeiei.view.adapter.ProjectAdapter
