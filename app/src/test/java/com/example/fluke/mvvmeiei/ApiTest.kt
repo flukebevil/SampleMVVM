@@ -1,11 +1,8 @@
 package com.example.fluke.mvvmeiei
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.arch.lifecycle.MutableLiveData
 import com.example.fluke.mvvmeiei.model.Project
 import com.example.fluke.mvvmeiei.service.GithubService
 import com.example.fluke.mvvmeiei.service.ProjectRepository
-import com.example.fluke.mvvmeiei.view.viewmodel.ProjectListViewModel
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.plugins.RxAndroidPlugins
@@ -13,36 +10,21 @@ import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.ExecutorScheduler
 import io.reactivex.plugins.RxJavaPlugins
-import org.junit.Assert
+import junit.framework.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import retrofit2.Call
 import retrofit2.Response
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
 class ApiTest {
-    @Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
-    @InjectMocks
-    val githubService = mock(GithubService::class.java)
+    @Mock
+    private val githubService = mock(GithubService::class.java)
 
-    var repository = ProjectRepository()
-
-    private val latch = CountDownLatch(1)
-    var dataList: Call<List<Project>>? = null
-
-    var dataMutableList: MutableLiveData<List<Project>> = MutableLiveData()
-
-    var mockCallBack = mock(ProjectRepository.CallBackListener::class.java)
-
-    val viewModel: ProjectListViewModel = ProjectListViewModel(this)
+    private var repository = ProjectRepository()
 
     @Before
     fun setUp() {
@@ -68,35 +50,39 @@ class ApiTest {
         Mockito.`when`(githubService.getProjectList("flukebevil")).thenReturn(
             Observable.just(Response.success(response))
         )
-        dataMutableList.value = response
-        Mockito.verify(mockCallBack)
     }
 
     @Test
     fun apiTestSuccess() {
         val response: List<Project> = arrayListOf()
-        Observable.just(Response.success(response)).test().assertComplete()
+        Observable.just(Response.success(response))
+            .test()
+            .assertComplete()
     }
 
     @Test
     fun testInstant() {
+        repository.getInstance()
         Assert.assertNotNull(repository)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun fetchOnTime() {
-        val response: List<Project> = arrayListOf()
-        `when`(githubService.getProjectList("flukebevil")).thenReturn(
-            Observable.create<Response<List<Project>>> { subscriber ->
-                try {
-                    Thread.sleep(4900)
-                    subscriber.onNext(Response.success(response))
-                    subscriber.onComplete()
-                } catch (e: InterruptedException) {
-                    subscriber.onError(e)
-                }
-            }
+    fun checkApiReturnValueWhenHttpCode200() {
+        val mockData = Project("0", "fluke", "www.google.com", "kotlin", "0")
+        val mockList1: List<Project> = listOf(mockData, mockData)
+
+        Mockito.`when`(githubService.getProjectList("flukebevil")).thenReturn(
+            Observable.just(Response.success(mockList1))
         )
+
+        githubService.getProjectList("flukebevil")
+        Mockito.verify(githubService).getProjectList("flukebevil")
+
+        githubService.getProjectList("flukebevil")
+            .test()
+            .assertNoErrors()
+            .assertValue { t: Response<List<Project>> ->
+                t.body() == mockList1
+            }
     }
 }

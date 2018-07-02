@@ -24,24 +24,23 @@ class MainActivity : AppCompatActivity() {
         binding?.apply {
             executePendingBindings()
         }
-
         val model: ProjectListViewModel = ViewModelProviders
             .of(this@MainActivity)
             .get(ProjectListViewModel()::class.java)
-
 
         initAdapter()
 
         observeViewModel(model)
     }
 
+
     private fun initAdapter() {
         projectList.adapter = projectAdapter
         projectList.layoutManager = LinearLayoutManager(this)
     }
 
-    private fun observeViewModel(viewModel: ProjectListViewModel) {
-        viewModel.getListObservable().observe(this, Observer<List<Project>> { t ->
+    fun observeViewModel(viewModel: ProjectListViewModel) {
+        viewModel.getListObservable()?.observe(this, Observer<List<Project>> { t ->
             projectAdapter?.setItem(t)
         })
     }

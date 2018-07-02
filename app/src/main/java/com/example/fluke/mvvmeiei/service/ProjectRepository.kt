@@ -17,9 +17,9 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ProjectRepository {
-    private var githubService = ApiManager.serviceWTF
-    private var projectRepository = ApiManager.repo
-    private val gson = Gson()
+     var githubService = ApiManager.serviceWTF
+     var projectRepository = ApiManager.repo
+     val gson = Gson()
 
     init {
         val serviceWTF: Retrofit = Retrofit.Builder()
@@ -40,7 +40,7 @@ class ProjectRepository {
         return projectRepository as ProjectRepository
     }
 
-    fun getProjectList(projectId: String): MutableLiveData<List<Project>> {
+    fun getProjectList(projectId: String): MutableLiveData<List<Project>>? {
         val mutableLiveData: MutableLiveData<List<Project>> = MutableLiveData()
         githubService?.getProjectList(projectId)
             ?.subscribeOn(Schedulers.io())
@@ -59,7 +59,7 @@ class ProjectRepository {
         return mutableLiveData
     }
 
-    private fun setHttpClientNew(): OkHttpClient {
+     private fun setHttpClientNew(): OkHttpClient {
         val client = OkHttpClient.Builder()
         client.addInterceptor(LoggingInterceptor.Builder()
             .loggable(BuildConfig.DEBUG)

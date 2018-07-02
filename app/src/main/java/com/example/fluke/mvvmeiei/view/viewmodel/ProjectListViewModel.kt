@@ -10,7 +10,7 @@ class ProjectListViewModel : ViewModel() {
 
     private val repo = ProjectRepository()
 
-    fun getListObservable(): MutableLiveData<List<Project>> {
+    fun getListObservable(): MutableLiveData<List<Project>>? {
        return repo.getInstance().getProjectList("flukebevil")
     }
 }
