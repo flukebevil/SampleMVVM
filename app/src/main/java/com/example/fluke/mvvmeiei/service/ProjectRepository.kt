@@ -1,26 +1,30 @@
 package com.example.fluke.mvvmeiei.service
 
 import android.arch.lifecycle.MutableLiveData
-import android.util.Log
 import com.example.fluke.mvvmeiei.BuildConfig
 import com.example.fluke.mvvmeiei.model.Project
+import com.google.gson.Gson
 import com.ihsanbal.logging.Level
 import com.ihsanbal.logging.LoggingInterceptor
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ProjectRepository {
     private var githubService = ApiManager.serviceWTF
     private var projectRepository = ApiManager.repo
+    private val gson = Gson()
 
     init {
         val serviceWTF: Retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .baseUrl(GithubService.HTTPS_API_GITHUB_URL)
             .client(setHttpClientNew())
             .build()
@@ -38,16 +42,21 @@ class ProjectRepository {
 
     fun getProjectList(projectId: String, callback: CallBackListener) {
         val mutableLiveData: MutableLiveData<List<Project>> = MutableLiveData()
-        githubService?.getProjectList(projectId)?.enqueue(object : Callback<List<Project>> {
-            override fun onFailure(call: Call<List<Project>>?, t: Throwable?) {
-                Log.e("error Retrofit :: ", t?.message)
-            }
+        githubService?.getProjectList(projectId)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe(object : DisposableObserver<Response<List<Project>>?>() {
+                override fun onComplete() {
+                }
 
-            override fun onResponse(call: Call<List<Project>>?, response: Response<List<Project>>?) {
-                mutableLiveData.value = response?.body()
-                callback.onFetchSuccess(mutableLiveData)
-            }
-        })
+                override fun onNext(t: Response<List<Project>>) {
+                    mutableLiveData.value = t.body()
+                    callback.onFetchSuccess(mutableLiveData)
+                }
+
+                override fun onError(e: Throwable) {
+                }
+            })
     }
 
     private fun setHttpClientNew(): OkHttpClient {
