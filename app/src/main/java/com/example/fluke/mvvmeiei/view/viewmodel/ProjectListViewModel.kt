@@ -7,9 +7,12 @@ import com.example.fluke.mvvmeiei.service.ProjectRepository
 
 class ProjectListViewModel : ViewModel() {
 
-    private val repo = ProjectRepository()
+    private var liveData: MutableLiveData<MutableList<Project>>? = null
 
-    fun getListObservable(): MutableLiveData<List<Project>>? {
-       return repo.getInstance().getProjectList("flukebevil")
+    fun getListObservable(): MutableLiveData<MutableList<Project>>? {
+        liveData ?: kotlin.run {
+            liveData = ProjectRepository.getProjectList("flukebevil")
+        }
+        return liveData
     }
 }

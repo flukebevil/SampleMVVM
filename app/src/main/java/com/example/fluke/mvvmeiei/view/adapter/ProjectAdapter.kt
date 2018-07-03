@@ -14,7 +14,7 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() 
 
     var projectListOld: List<Project>? = arrayListOf()
 
-    fun setItem(projectList: List<Project>?) {
+    fun setItem(projectList: MutableList<Project>?) {
         projectList?.let {
             projectListOld = it
             projectListOld?.let { notifyItemRangeInserted(0, it.size) }

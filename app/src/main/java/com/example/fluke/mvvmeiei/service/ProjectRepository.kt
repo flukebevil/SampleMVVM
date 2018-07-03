@@ -16,40 +16,29 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ProjectRepository {
-     var githubService = ApiManager.serviceWTF
-     var projectRepository = ApiManager.repo
-     val gson = Gson()
+object ProjectRepository {
+    val gson = Gson()
 
-    init {
+    fun getRetrofit(): GithubService? {
         val serviceWTF: Retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .baseUrl(GithubService.HTTPS_API_GITHUB_URL)
-            .client(setHttpClientNew())
+            .client(getHttpClientNew())
             .build()
-        githubService = serviceWTF.create(GithubService::class.java)
+        return serviceWTF.create(GithubService::class.java)
     }
 
-    fun getInstance(): ProjectRepository {
-        if (projectRepository == null) {
-            if (projectRepository == null) {
-                projectRepository = ProjectRepository()
-            }
-        }
-        return projectRepository as ProjectRepository
-    }
-
-    fun getProjectList(projectId: String): MutableLiveData<List<Project>>? {
-        val mutableLiveData: MutableLiveData<List<Project>> = MutableLiveData()
-        githubService?.getProjectList(projectId)
+    fun getProjectList(projectId: String): MutableLiveData<MutableList<Project>>? {
+        val mutableLiveData: MutableLiveData<MutableList<Project>> = MutableLiveData()
+        getRetrofit()?.getProjectList(projectId)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe(object : DisposableObserver<Response<List<Project>>?>() {
+            ?.subscribe(object : DisposableObserver<Response<MutableList<Project>>?>() {
                 override fun onComplete() {
                 }
 
-                override fun onNext(t: Response<List<Project>>) {
+                override fun onNext(t: Response<MutableList<Project>>) {
                     mutableLiveData.value = t.body()
                 }
 
@@ -59,7 +48,7 @@ class ProjectRepository {
         return mutableLiveData
     }
 
-     private fun setHttpClientNew(): OkHttpClient {
+    private fun getHttpClientNew(): OkHttpClient {
         val client = OkHttpClient.Builder()
         client.addInterceptor(LoggingInterceptor.Builder()
             .loggable(BuildConfig.DEBUG)

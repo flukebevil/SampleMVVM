@@ -13,5 +13,5 @@ interface GithubService {
 
     @GET("users/{user}/repos")
     fun getProjectList(@Path("user") user: String):
-        Observable<Response<List<Project>>>
+        Observable<Response<MutableList<Project>>>
 }

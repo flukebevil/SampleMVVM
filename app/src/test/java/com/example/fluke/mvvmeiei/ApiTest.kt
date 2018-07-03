@@ -2,7 +2,6 @@ package com.example.fluke.mvvmeiei
 
 import com.example.fluke.mvvmeiei.model.Project
 import com.example.fluke.mvvmeiei.service.GithubService
-import com.example.fluke.mvvmeiei.service.ProjectRepository
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.plugins.RxAndroidPlugins
@@ -10,7 +9,6 @@ import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.ExecutorScheduler
 import io.reactivex.plugins.RxJavaPlugins
-import junit.framework.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -23,8 +21,6 @@ import java.util.concurrent.TimeUnit
 class ApiTest {
     @Mock
     private val githubService = mock(GithubService::class.java)
-
-    private var repository = ProjectRepository()
 
     @Before
     fun setUp() {
@@ -46,7 +42,7 @@ class ApiTest {
 
     @Test
     fun apiSuccessResponseTest() {
-        val response: List<Project> = arrayListOf()
+        val response: MutableList<Project> = arrayListOf()
         Mockito.`when`(githubService.getProjectList("flukebevil")).thenReturn(
             Observable.just(Response.success(response))
         )
@@ -61,15 +57,11 @@ class ApiTest {
     }
 
     @Test
-    fun testInstant() {
-        repository.getInstance()
-        Assert.assertNotNull(repository)
-    }
-
-    @Test
     fun checkApiReturnValueWhenHttpCode200() {
         val mockData = Project("0", "fluke", "www.google.com", "kotlin", "0")
-        val mockList1: List<Project> = listOf(mockData, mockData)
+        val mockList1: MutableList<Project> = arrayListOf()
+        mockList1.add(mockData)
+        mockList1.add(mockData)
 
         Mockito.`when`(githubService.getProjectList("flukebevil")).thenReturn(
             Observable.just(Response.success(mockList1))
@@ -81,7 +73,7 @@ class ApiTest {
         githubService.getProjectList("flukebevil")
             .test()
             .assertNoErrors()
-            .assertValue { t: Response<List<Project>> ->
+            .assertValue { t: Response<MutableList<Project>> ->
                 t.body() == mockList1
             }
     }

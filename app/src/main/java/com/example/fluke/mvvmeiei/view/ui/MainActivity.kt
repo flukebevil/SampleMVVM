@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel(viewModel: ProjectListViewModel) {
         viewModel.getListObservable()?.observe(
             this,
-            Observer<List<Project>>
+            Observer<MutableList<Project>>
             { t ->
                 projectAdapter?.setItem(t)
             }

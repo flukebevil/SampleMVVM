@@ -3,7 +3,7 @@
     <string name="loading_projects">Loading projects ...</string>
     <string name="projects_list">Project list</string>
     <string name="project_name">Name of the project</string>
-    <string name="google_github_projects">Google GitHub Projects</string>
+    <string name="google_github_projects">GitHub Projects</string>
     <string name="project_list">Project List</string>
     <string name="languages">Languages: %s</string>
     <string name="watchers">Watchers: %s</string>
