@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         projectList.layoutManager = LinearLayoutManager(this)
     }
 
-    private fun observeViewModel(viewModel: ProjectListViewModel) {
+    fun observeViewModel(viewModel: ProjectListViewModel) {
         viewModel.getListObservable()?.observe(
             this,
             Observer<MutableList<Project>>

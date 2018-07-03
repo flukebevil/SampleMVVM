@@ -2,6 +2,7 @@ package com.example.fluke.mvvmeiei.service
 
 import android.arch.lifecycle.MutableLiveData
 import com.example.fluke.mvvmeiei.BuildConfig
+import com.example.fluke.mvvmeiei.Constant
 import com.example.fluke.mvvmeiei.model.Project
 import com.google.gson.Gson
 import com.ihsanbal.logging.Level
@@ -17,13 +18,13 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ProjectRepository {
-    val gson = Gson()
+    private val gson = Gson()
 
-    fun getRetrofit(): GithubService? {
+    private fun getRetrofit(): GithubService? {
         val serviceWTF: Retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl(GithubService.HTTPS_API_GITHUB_URL)
+            .baseUrl(Constant.HTTPS_API_GITHUB_URL)
             .client(getHttpClientNew())
             .build()
         return serviceWTF.create(GithubService::class.java)
