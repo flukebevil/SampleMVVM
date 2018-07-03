@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import com.example.fluke.mvvmeiei.R
 import com.example.fluke.mvvmeiei.databinding.ActivityMainBinding
 import com.example.fluke.mvvmeiei.model.Project
@@ -20,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val binding: ActivityMainBinding? = DataBindingUtil.setContentView(
             this,
             R.layout.activity_main
@@ -32,8 +32,14 @@ class MainActivity : AppCompatActivity() {
             .of(this@MainActivity)
             .get(ProjectListViewModel()::class.java)
 
-        initAdapter()
+        model.liveItems?.observe(this,
+            Observer<List<Project>> { t ->
+                Log.d("POND", "$t")
+                projectAdapter?.setItem(t)
+            }
+        )
 
+        initAdapter()
         observeViewModel(model)
     }
 
@@ -43,12 +49,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel(viewModel: ProjectListViewModel) {
-        viewModel.getListObservable()?.observe(
-            this,
-            Observer<List<Project>>
-            { t ->
-                projectAdapter?.setItem(t)
-            }
-        )
+        viewModel.getListObservable()
     }
 }

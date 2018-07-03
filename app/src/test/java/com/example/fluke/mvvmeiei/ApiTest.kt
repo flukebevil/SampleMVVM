@@ -2,7 +2,6 @@ package com.example.fluke.mvvmeiei
 
 import com.example.fluke.mvvmeiei.model.Project
 import com.example.fluke.mvvmeiei.service.GithubService
-import com.example.fluke.mvvmeiei.service.ProjectRepository
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.plugins.RxAndroidPlugins
@@ -10,7 +9,6 @@ import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.ExecutorScheduler
 import io.reactivex.plugins.RxJavaPlugins
-import junit.framework.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -23,8 +21,6 @@ import java.util.concurrent.TimeUnit
 class ApiTest {
     @Mock
     private val githubService = mock(GithubService::class.java)
-
-    private var repository = ProjectRepository()
 
     @Before
     fun setUp() {
@@ -58,12 +54,6 @@ class ApiTest {
         Observable.just(Response.success(response))
             .test()
             .assertComplete()
-    }
-
-    @Test
-    fun testInstant() {
-        repository.getInstance()
-        Assert.assertNotNull(repository)
     }
 
     @Test

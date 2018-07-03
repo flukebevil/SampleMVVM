@@ -1,6 +1,7 @@
 package com.example.fluke.mvvmeiei.service
 
 import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import com.example.fluke.mvvmeiei.BuildConfig
 import com.example.fluke.mvvmeiei.model.Project
 import com.google.gson.Gson
@@ -16,50 +17,15 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ProjectRepository {
-     var githubService = ApiManager.serviceWTF
-     var projectRepository = ApiManager.repo
-     val gson = Gson()
+//interface ProjectRepositoryAble {
+//    fun getProjectList(projectId: String): MutableLiveData<List<Project>>?
+//}
 
-    init {
-        val serviceWTF: Retrofit = Retrofit.Builder()
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl(GithubService.HTTPS_API_GITHUB_URL)
-            .client(setHttpClientNew())
-            .build()
-        githubService = serviceWTF.create(GithubService::class.java)
-    }
+object ProjectRepository {
 
-    fun getInstance(): ProjectRepository {
-        if (projectRepository == null) {
-            if (projectRepository == null) {
-                projectRepository = ProjectRepository()
-            }
-        }
-        return projectRepository as ProjectRepository
-    }
+    private val gson = Gson()
 
-    fun getProjectList(projectId: String): MutableLiveData<List<Project>>? {
-        val mutableLiveData: MutableLiveData<List<Project>> = MutableLiveData()
-        githubService?.getProjectList(projectId)
-            ?.subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe(object : DisposableObserver<Response<List<Project>>?>() {
-                override fun onComplete() {
-                }
-
-                override fun onNext(t: Response<List<Project>>) {
-                    mutableLiveData.value = t.body()
-                }
-
-                override fun onError(e: Throwable) {
-                }
-            })
-        return mutableLiveData
-    }
-
-     private fun setHttpClientNew(): OkHttpClient {
+    private fun getHttpClientNew(): OkHttpClient {
         val client = OkHttpClient.Builder()
         client.addInterceptor(LoggingInterceptor.Builder()
             .loggable(BuildConfig.DEBUG)
@@ -70,5 +36,35 @@ class ProjectRepository {
             .addHeader("version", BuildConfig.VERSION_NAME)
             .build())
         return client.build()
+    }
+
+    private fun getGithubService(): GithubService? {
+        val serviceWTF: Retrofit = Retrofit.Builder()
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(GithubService.HTTPS_API_GITHUB_URL)
+            .client(getHttpClientNew())
+            .build()
+        return serviceWTF.create(GithubService::class.java)
+    }
+
+    fun getProjectList(projectId: String): MutableLiveData<List<Project>>? {
+        val mutableLiveData: MutableLiveData<List<Project>> = MutableLiveData()
+        getGithubService()?.getProjectList(projectId)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe(object : DisposableObserver<Response<List<Project>>?>() {
+                override fun onComplete() {
+                }
+
+                override fun onNext(t: Response<List<Project>>) {
+                    mutableLiveData.value = t.body()
+                    Log.d("POND", "result: ${mutableLiveData.value}")
+                }
+
+                override fun onError(e: Throwable) {
+                }
+            })
+        return mutableLiveData
     }
 }
