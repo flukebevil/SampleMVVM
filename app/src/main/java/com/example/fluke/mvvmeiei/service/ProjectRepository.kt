@@ -1,6 +1,5 @@
 package com.example.fluke.mvvmeiei.service
 
-import android.arch.lifecycle.MutableLiveData
 import com.example.fluke.mvvmeiei.BuildConfig
 import com.example.fluke.mvvmeiei.Constant
 import com.example.fluke.mvvmeiei.model.Project
@@ -17,7 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-object ProjectRepository {
+class ProjectRepository {
     private val gson = Gson()
 
     private fun getRetrofit(): GithubService? {
@@ -30,8 +29,7 @@ object ProjectRepository {
         return serviceWTF.create(GithubService::class.java)
     }
 
-    fun getProjectList(projectId: String): MutableLiveData<MutableList<Project>>? {
-        val mutableLiveData: MutableLiveData<MutableList<Project>> = MutableLiveData()
+    fun getProjectList(projectId: String, callback: OnProjectCallBackListener) {
         getRetrofit()?.getProjectList(projectId)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
@@ -40,13 +38,12 @@ object ProjectRepository {
                 }
 
                 override fun onNext(t: Response<MutableList<Project>>) {
-                    mutableLiveData.value = t.body()
+                    t.body()?.let { callback.onSuccess(it) }
                 }
 
                 override fun onError(e: Throwable) {
                 }
             })
-        return mutableLiveData
     }
 
     private fun getHttpClientNew(): OkHttpClient {
@@ -60,5 +57,9 @@ object ProjectRepository {
             .addHeader("version", BuildConfig.VERSION_NAME)
             .build())
         return client.build()
+    }
+
+    interface OnProjectCallBackListener {
+        fun onSuccess(t: MutableList<Project>?)
     }
 }

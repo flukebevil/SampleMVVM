@@ -73,8 +73,12 @@ class ApiTest {
         githubService.getProjectList("flukebevil")
             .test()
             .assertNoErrors()
+            .assertComplete()
             .assertValue { t: Response<MutableList<Project>> ->
                 t.body() == mockList1
+            }
+            .assertValue {
+                it.code() == 200
             }
     }
 }

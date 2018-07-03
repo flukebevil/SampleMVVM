@@ -1,5 +1,6 @@
 package com.example.fluke.mvvmeiei.view.ui
 
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
@@ -32,9 +33,9 @@ class MainActivity : AppCompatActivity() {
             .of(this@MainActivity)
             .get(ProjectListViewModel()::class.java)
 
+        model.attachView(this)
         initAdapter()
-
-        observeViewModel(model)
+        getProjectData(model)
     }
 
     private fun initAdapter() {
@@ -42,13 +43,17 @@ class MainActivity : AppCompatActivity() {
         projectList.layoutManager = LinearLayoutManager(this)
     }
 
-    fun observeViewModel(viewModel: ProjectListViewModel) {
-        viewModel.getListObservable()?.observe(
+    fun observeViewModel(liveData: MutableLiveData<MutableList<Project>>?) {
+        liveData?.observe(
             this,
             Observer<MutableList<Project>>
             { t ->
                 projectAdapter?.setItem(t)
             }
         )
+    }
+
+    private fun getProjectData(viewModel: ProjectListViewModel) {
+        viewModel.getListObservable()
     }
 }
