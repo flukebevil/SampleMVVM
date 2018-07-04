@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference
 
 class ProjectListViewModel : ViewModel(), ProjectRepository.OnProjectCallBackListener {
 
-    val repo: ProjectRepository = ProjectRepository()
+    var repo: ProjectRepository = ProjectRepository()
 
     private var viewRef: WeakReference<MainActivity>? = null
 

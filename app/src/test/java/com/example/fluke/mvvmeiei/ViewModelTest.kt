@@ -8,6 +8,7 @@ import com.example.fluke.mvvmeiei.view.viewmodel.ProjectListViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.mockkClass
+import io.mockk.verify
 import io.reactivex.Scheduler
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.annotations.NonNull
@@ -18,7 +19,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
@@ -51,10 +51,10 @@ class ViewModelTest {
         RxJavaPlugins.setInitSingleSchedulerHandler { immediate }
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { immediate }
 
-        MockitoAnnotations.initMocks(this)
         MockKAnnotations.init(this)
         viewModel = ProjectListViewModel()
         repo = mockkClass(ProjectRepository::class)
+        viewModel.repo = repo
     }
 
     @Test
@@ -66,8 +66,10 @@ class ViewModelTest {
             viewModel.onSuccess(mockList1)
         }
 
+        viewModel.liveData.value = null
         viewModel.getListObservable()
-        repo.getProjectList("flukebevil", viewModel)
+
+        verify { repo.getProjectList("flukebevil", viewModel) }
 
         viewModel.liveData.observeForever {
             Assert.assertEquals(it, mockList1)
