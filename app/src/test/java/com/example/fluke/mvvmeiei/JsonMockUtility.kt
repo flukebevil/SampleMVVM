@@ -1,4 +1,4 @@
-package de.riderr.app
+package com.example.fluke.mvvmeiei
 
 import com.google.gson.GsonBuilder
 import java.lang.reflect.Type
