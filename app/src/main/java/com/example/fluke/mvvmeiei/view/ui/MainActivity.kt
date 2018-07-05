@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.example.fluke.mvvmeiei.R
 import com.example.fluke.mvvmeiei.databinding.ActivityMainBinding
 import com.example.fluke.mvvmeiei.model.Project
+import com.example.fluke.mvvmeiei.service.ProjectRepository
 import com.example.fluke.mvvmeiei.view.adapter.ProjectAdapter
 import com.example.fluke.mvvmeiei.view.viewmodel.ProjectListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var projectAdapter: ProjectAdapter? = ProjectAdapter()
+    private val repo: ProjectRepository = ProjectRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
         val model: ProjectListViewModel = ViewModelProviders
             .of(this@MainActivity)
-            .get(ProjectListViewModel()::class.java)
+            .get(ProjectListViewModel(repo)::class.java)
 
         model.attachView(this)
         initAdapter()

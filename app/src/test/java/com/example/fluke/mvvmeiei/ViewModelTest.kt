@@ -52,9 +52,8 @@ class ViewModelTest {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { immediate }
 
         MockKAnnotations.init(this)
-        viewModel = ProjectListViewModel()
         repo = mockkClass(ProjectRepository::class)
-        viewModel.repo = repo
+        viewModel = ProjectListViewModel(repo)
     }
 
     @Test

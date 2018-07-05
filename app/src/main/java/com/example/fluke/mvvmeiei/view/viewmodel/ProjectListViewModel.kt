@@ -7,9 +7,7 @@ import com.example.fluke.mvvmeiei.service.ProjectRepository
 import com.example.fluke.mvvmeiei.view.ui.MainActivity
 import java.lang.ref.WeakReference
 
-class ProjectListViewModel : ViewModel(), ProjectRepository.OnProjectCallBackListener {
-
-    var repo: ProjectRepository = ProjectRepository()
+class ProjectListViewModel(var repo: ProjectRepository) : ViewModel(), ProjectRepository.OnProjectCallBackListener {
 
     private var viewRef: WeakReference<MainActivity>? = null
 
